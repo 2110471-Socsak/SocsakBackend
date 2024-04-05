@@ -1,20 +1,13 @@
-package com.socsak.netwchat.models;
+package com.socsak.netwchat.dtos.auth;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+public class RegisterLoginRequest {
 
-@Document("user")
-public class User {
-
-    @Id
-    private String id;
     private String username;
     private String password;
 
-    public User(String username, String password) {
-        super();
-        this.username = username;
-        this.password = password;
+    public RegisterLoginRequest(String username, String password) {
+        setUsername(username);
+        setPassword(password);
     }
 
     public String getUsername() {
