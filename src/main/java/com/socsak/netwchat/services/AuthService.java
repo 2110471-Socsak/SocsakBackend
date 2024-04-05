@@ -1,5 +1,6 @@
 package com.socsak.netwchat.services;
 
+import com.mongodb.DuplicateKeyException;
 import com.socsak.netwchat.dtos.auth.RegisterLoginRequest;
 import com.socsak.netwchat.models.User;
 import com.socsak.netwchat.repositories.UserRepository;
@@ -13,7 +14,12 @@ public class AuthService implements IAuthService {
     UserRepository userRepository;
 
     @Override
-    public User register(RegisterLoginRequest userRegisterLoginRequest) {
-        return userRepository.insert(new User(userRegisterLoginRequest.getUsername(), userRegisterLoginRequest.getPassword()));
+    public User register(RegisterLoginRequest usrl) {
+        try {
+            return userRepository.insert(new User(usrl.getUsername(), usrl.getPassword()));
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 }
