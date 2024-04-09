@@ -24,9 +24,9 @@ public class GenericResponse<T> {
                 .build();
     }
 
-    public static <T> GenericResponse<T> error() {
+    public static <T> GenericResponse<T> error(String message) {
         return GenericResponse.<T>builder()
-                .message("ERROR!")
+                .message(message)
                 .success(false)
                 .build();
     }

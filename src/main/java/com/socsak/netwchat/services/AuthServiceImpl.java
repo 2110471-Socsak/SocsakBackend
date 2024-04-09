@@ -1,7 +1,6 @@
 package com.socsak.netwchat.services;
 
 import com.socsak.netwchat.dtos.auth.RegisterLoginRequest;
-import com.socsak.netwchat.exceptions.UnknownException;
 import com.socsak.netwchat.exceptions.auth.DuplicateUsernameException;
 import com.socsak.netwchat.models.User;
 import com.socsak.netwchat.repositories.UserRepository;
@@ -22,8 +21,6 @@ public class AuthServiceImpl implements AuthService {
         }
         catch (DuplicateKeyException e) {
             throw new DuplicateUsernameException();
-        } catch (Exception e) {
-            throw new UnknownException();
         }
     }
 }
