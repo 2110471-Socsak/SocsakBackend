@@ -15,13 +15,9 @@ public class User {
     @Setter
     @Indexed(unique = true)
     private String username;
-    @Getter
-    @Setter
-    private String password;
 
-    public User(String username, String password) {
+    public User(String username) {
         super();
         this.username = username;
-        this.password = password;
     }
 }

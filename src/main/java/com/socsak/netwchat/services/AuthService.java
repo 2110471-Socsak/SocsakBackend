@@ -16,9 +16,10 @@ public class AuthService implements IAuthService {
     @Override
     public User register(RegisterLoginRequest usrl) {
         try {
-            return userRepository.insert(new User(usrl.getUsername(), usrl.getPassword()));
+            return userRepository.insert(new User(usrl.getUsername()));
         }
         catch (Exception e) {
+            System.out.println(e.getMessage());
             return null;
         }
     }
