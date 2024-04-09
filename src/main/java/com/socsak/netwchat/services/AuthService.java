@@ -5,4 +5,5 @@ import com.socsak.netwchat.models.User;
 
 public interface AuthService {
     User register(RegisterLoginRequest userRegisterLoginRequest) throws Exception;
+    User login(RegisterLoginRequest userRegisterLoginRequest);
 }
