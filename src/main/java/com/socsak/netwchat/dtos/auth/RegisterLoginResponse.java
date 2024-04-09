@@ -12,5 +12,6 @@ import lombok.Setter;
 public class RegisterLoginResponse {
 
     private String username;
+    private String token;
 
 }

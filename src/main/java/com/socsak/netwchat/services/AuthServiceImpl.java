@@ -6,9 +6,7 @@ import com.socsak.netwchat.models.User;
 import com.socsak.netwchat.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.domain.Example;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,9 +16,14 @@ public class AuthServiceImpl implements AuthService {
     UserRepository userRepository;
 
     @Override
-    public User register(RegisterLoginRequest usrl) throws Exception {
+    public UserDetails register(RegisterLoginRequest usrl) throws Exception {
         try {
-            return userRepository.insert(new User(usrl.getUsername()));
+            String hashed = usrl.getPassword();
+            User user = userRepository.insert(new User(usrl.getUsername(), hashed));
+            return org.springframework.security.core.userdetails.User.builder()
+                    .username(user.getUsername())
+                    .password(user.getPassword())
+                    .build();
         }
         catch (DuplicateKeyException e) {
             throw new DuplicateUsernameException();
@@ -28,7 +31,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public User login(RegisterLoginRequest usrl) {
-        return userRepository.findByUsername(usrl.getUsername());
+    public UserDetails login(RegisterLoginRequest usrl) {
+        User user = userRepository.findByUsername(usrl.getUsername());
+        if (user == null) {
+            return null;
+        }
+        String hashedPasswordInput = usrl.getPassword();
+        if (user.getPassword().equals(hashedPasswordInput)) {
+            return org.springframework.security.core.userdetails.User.builder()
+                    .username(user.getUsername())
+                    .password(user.getPassword())
+                    .build();
+        }
+        return null;
     }
 }

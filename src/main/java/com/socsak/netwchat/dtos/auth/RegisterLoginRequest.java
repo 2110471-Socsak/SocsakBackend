@@ -12,5 +12,6 @@ import lombok.Setter;
 public class RegisterLoginRequest {
 
     private String username;
+    private String password;
 
 }
