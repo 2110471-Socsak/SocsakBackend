@@ -4,9 +4,12 @@ import com.socsak.netwchat.models.User;
 import com.socsak.netwchat.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
-public class UserDetailServiceImpl implements UserDetailService{
+@Service
+public class UserDetailServiceImpl implements UserDetailsService{
 
     @Autowired
     UserRepository userRepository;

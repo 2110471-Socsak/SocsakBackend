@@ -6,7 +6,10 @@ import com.socsak.netwchat.models.User;
 import com.socsak.netwchat.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,11 +17,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     @Override
     public UserDetails register(AuthRequest authRequest) throws Exception {
         try {
-            String hashed = authRequest.getPassword();
+            String hashed = passwordEncoder.encode(authRequest.getPassword());
             User user = userRepository.insert(new User(authRequest.getUsername(), hashed));
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())
@@ -32,17 +39,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDetails login(AuthRequest authRequest) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authRequest.getUsername(),
+                        authRequest.getPassword()
+                )
+        );
         User user = userRepository.findByUsername(authRequest.getUsername());
-        if (user == null) {
-            return null;
-        }
-        String hashedPasswordInput = authRequest.getPassword();
-        if (user.getPassword().equals(hashedPasswordInput)) {
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getUsername())
-                    .password(user.getPassword())
-                    .build();
-        }
-        return null;
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .build();
     }
 }
