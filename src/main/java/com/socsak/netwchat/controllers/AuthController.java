@@ -1,7 +1,7 @@
 package com.socsak.netwchat.controllers;
 
-import com.socsak.netwchat.dtos.auth.RegisterLoginRequest;
-import com.socsak.netwchat.dtos.auth.RegisterLoginResponse;
+import com.socsak.netwchat.dtos.auth.AuthRequest;
+import com.socsak.netwchat.dtos.auth.AuthResponse;
 import com.socsak.netwchat.dtos.generic.GenericResponse;
 import com.socsak.netwchat.exceptions.auth.DuplicateUsernameException;
 import com.socsak.netwchat.services.AuthService;
@@ -23,11 +23,11 @@ public class AuthController {
 
 
     @PostMapping("register")
-    public ResponseEntity<GenericResponse<RegisterLoginResponse>> register(@RequestBody RegisterLoginRequest usrl) {
+    public ResponseEntity<GenericResponse<AuthResponse>> register(@RequestBody AuthRequest authRequest) {
         try {
-            UserDetails user = authService.register(usrl);
+            UserDetails user = authService.register(authRequest);
             String token = "";
-            return ResponseEntity.ok(GenericResponse.success(new RegisterLoginResponse(user.getUsername(), token)));
+            return ResponseEntity.ok(GenericResponse.success(new AuthResponse(user.getUsername(), token)));
         } catch (DuplicateUsernameException e) {
             return ResponseEntity.badRequest().body(GenericResponse.error(e.getMessage()));
         } catch (Exception e) {
@@ -36,14 +36,14 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<GenericResponse<RegisterLoginResponse>> login(@RequestBody RegisterLoginRequest usrl) {
+    public ResponseEntity<GenericResponse<AuthResponse>> login(@RequestBody AuthRequest authRequest) {
         try {
-            UserDetails user = authService.login(usrl);
+            UserDetails user = authService.login(authRequest);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(GenericResponse.error("Invalid username or password"));
             }
             String token = "";
-            return ResponseEntity.ok(GenericResponse.success(new RegisterLoginResponse(user.getUsername(), token)));
+            return ResponseEntity.ok(GenericResponse.success(new AuthResponse(user.getUsername(), token)));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

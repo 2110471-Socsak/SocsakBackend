@@ -1,6 +1,6 @@
 package com.socsak.netwchat.services;
 
-import com.socsak.netwchat.dtos.auth.RegisterLoginRequest;
+import com.socsak.netwchat.dtos.auth.AuthRequest;
 import com.socsak.netwchat.exceptions.auth.DuplicateUsernameException;
 import com.socsak.netwchat.models.User;
 import com.socsak.netwchat.repositories.UserRepository;
@@ -16,10 +16,10 @@ public class AuthServiceImpl implements AuthService {
     UserRepository userRepository;
 
     @Override
-    public UserDetails register(RegisterLoginRequest usrl) throws Exception {
+    public UserDetails register(AuthRequest authRequest) throws Exception {
         try {
-            String hashed = usrl.getPassword();
-            User user = userRepository.insert(new User(usrl.getUsername(), hashed));
+            String hashed = authRequest.getPassword();
+            User user = userRepository.insert(new User(authRequest.getUsername(), hashed));
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
@@ -31,12 +31,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDetails login(RegisterLoginRequest usrl) {
-        User user = userRepository.findByUsername(usrl.getUsername());
+    public UserDetails login(AuthRequest authRequest) {
+        User user = userRepository.findByUsername(authRequest.getUsername());
         if (user == null) {
             return null;
         }
-        String hashedPasswordInput = usrl.getPassword();
+        String hashedPasswordInput = authRequest.getPassword();
         if (user.getPassword().equals(hashedPasswordInput)) {
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())

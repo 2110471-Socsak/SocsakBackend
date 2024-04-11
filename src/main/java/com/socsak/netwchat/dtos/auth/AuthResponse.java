@@ -5,13 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterLoginRequest {
+public class AuthResponse {
 
     private String username;
-    private String password;
+    private String token;
 
 }
