@@ -1,5 +1,6 @@
 package com.socsak.netwchat.configs;
 
+import com.socsak.netwchat.services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,6 +1,6 @@
 package com.socsak.netwchat.controllers;
 
-import com.socsak.netwchat.configs.JwtService;
+import com.socsak.netwchat.services.JwtService;
 import com.socsak.netwchat.dtos.auth.AuthRequest;
 import com.socsak.netwchat.dtos.auth.AuthResponse;
 import com.socsak.netwchat.dtos.generic.GenericResponse;

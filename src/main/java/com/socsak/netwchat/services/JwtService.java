@@ -1,4 +1,4 @@
-package com.socsak.netwchat.configs;
+package com.socsak.netwchat.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
