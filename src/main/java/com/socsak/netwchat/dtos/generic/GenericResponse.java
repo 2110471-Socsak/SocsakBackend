@@ -18,6 +18,7 @@ public class GenericResponse<T> {
 
     public static <T> GenericResponse<T> success(T data) {
         return GenericResponse.<T>builder()
+                .message("success")
                 .data(data)
                 .success(true)
                 .build();
