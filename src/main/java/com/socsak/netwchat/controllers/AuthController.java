@@ -1,6 +1,6 @@
 package com.socsak.netwchat.controllers;
 
-import com.socsak.netwchat.services.JwtService;
+import com.socsak.netwchat.utils.JwtUtil;
 import com.socsak.netwchat.dtos.auth.AuthRequest;
 import com.socsak.netwchat.dtos.auth.AuthResponse;
 import com.socsak.netwchat.dtos.generic.GenericResponse;
@@ -20,14 +20,14 @@ public class AuthController {
     @Autowired
     AuthService authService;
     @Autowired
-    JwtService jwtService;
+    JwtUtil jwtUtil;
 
 
     @PostMapping("register")
     public ResponseEntity<GenericResponse<AuthResponse>> register(@RequestBody AuthRequest authRequest) {
         try {
             UserDetails user = authService.register(authRequest);
-            String token = jwtService.generateToken(user);
+            String token = jwtUtil.generateToken(user);
             return ResponseEntity.ok(GenericResponse.success(new AuthResponse(user.getUsername(), token)));
         } catch (DuplicateUsernameException e) {
             return ResponseEntity.badRequest().body(GenericResponse.error(e.getMessage()));
@@ -40,7 +40,7 @@ public class AuthController {
     public ResponseEntity<GenericResponse<AuthResponse>> login(@RequestBody AuthRequest authRequest) {
         try {
             UserDetails user = authService.login(authRequest);
-            String token = jwtService.generateToken(user);
+            String token = jwtUtil.generateToken(user);
             return ResponseEntity.ok(GenericResponse.success(new AuthResponse(user.getUsername(), token)));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(GenericResponse.error("Invalid username or password"));

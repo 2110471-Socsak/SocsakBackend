@@ -1,6 +1,6 @@
 package com.socsak.netwchat.filters;
 
-import com.socsak.netwchat.services.JwtService;
+import com.socsak.netwchat.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired
-    JwtService jwtService;
+    JwtUtil jwtUtil;
     @Autowired
     UserDetailsService userDetailService;
 
@@ -40,10 +40,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        username = jwtService.extractUsername(jwt);
+        username = jwtUtil.extractUsername(jwt);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailService.loadUserByUsername(username);
-            if (jwtService.isValidToken(jwt, userDetails)) {
+            if (jwtUtil.isValidToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
