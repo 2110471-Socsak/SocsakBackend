@@ -1,4 +1,4 @@
-package com.socsak.netwchat.configs;
+package com.socsak.netwchat.filters;
 
 import com.socsak.netwchat.services.JwtService;
 import jakarta.servlet.FilterChain;
