@@ -19,14 +19,12 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group createGroup(String name) {
-        Group g = groupRepository.insert(new Group(name));
-        System.out.println(g);
-        return g;
+        return groupRepository.insert(new Group(name));
     }
 
     @Override
     public List<Group> getGroups() {
-        return null;
+        return groupRepository.findAll();
     }
 
     @Override

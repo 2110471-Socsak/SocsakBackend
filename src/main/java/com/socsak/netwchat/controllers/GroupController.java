@@ -3,7 +3,6 @@ package com.socsak.netwchat.controllers;
 import com.socsak.netwchat.dtos.generic.GenericResponse;
 import com.socsak.netwchat.dtos.group.CreateGroupRequest;
 import com.socsak.netwchat.dtos.messages.Message;
-import com.socsak.netwchat.dtos.messages.MsgResponse;
 import com.socsak.netwchat.models.Group;
 import com.socsak.netwchat.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("groups")
@@ -31,13 +31,23 @@ public class GroupController {
        }
     }
 
+    @GetMapping()
+    public ResponseEntity<GenericResponse<List<Group>>> getAllGroups() {
+        try {
+            List<Group> groups = groupService.getGroups();
+            return ResponseEntity.ok(GenericResponse.success(groups));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @GetMapping("{groupId}/messages")
-    public ResponseEntity<GenericResponse<MsgResponse>> getGroupMessagesHistory(
+    public ResponseEntity<GenericResponse<List<Message>>> getGroupMessagesHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "16") int limit,
             @PathVariable String groupId
     ) {
-        MsgResponse grRes = new MsgResponse(new ArrayList<>());
+        ArrayList<Message> grRes = new ArrayList<>();
         for (int i=0; i<limit; i++) {
             Message message = Message.builder()
                     .id("Mongo ObjectID")
@@ -45,7 +55,7 @@ public class GroupController {
                     .message("text hello world welcome")
                     .sentAt(new Date(System.currentTimeMillis() - i * 2123L))
                     .build();
-            grRes.getMessages().add(message);
+            grRes.add(message);
         }
         return ResponseEntity.ok(GenericResponse.success(grRes));
     }
