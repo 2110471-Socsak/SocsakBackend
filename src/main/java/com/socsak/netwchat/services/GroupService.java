@@ -10,5 +10,5 @@ public interface GroupService {
     Group createGroup(String name);
     List<Group> getGroups();
     GroupMsg sendMessage(String sender, String groupId, String message) throws Exception;
-    List<GroupMsg> getMessages(String groupId);
+    List<GroupMsg> getMessages(String groupId, int page, int limit);
 }

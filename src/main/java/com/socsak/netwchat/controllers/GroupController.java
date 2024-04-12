@@ -52,17 +52,8 @@ public class GroupController {
             @RequestParam(defaultValue = "16") int limit,
             @PathVariable String groupId
     ) {
-        ArrayList<MessageResponse> grRes = new ArrayList<>();
-        for (int i=0; i<limit; i++) {
-            MessageResponse messageResponse = MessageResponse.builder()
-                    .id("Mongo ObjectID")
-                    .sender("username")
-                    .message("text hello world welcome")
-                    .sentAt(new Date(System.currentTimeMillis() - i * 2123L))
-                    .build();
-            grRes.add(messageResponse);
-        }
-        return ResponseEntity.ok(GenericResponse.success(grRes));
+        List<GroupMsg> groupMsgList = groupService.getMessages(groupId, page, limit);
+        return ResponseEntity.ok(GenericResponse.success(groupMsgList.stream().map(MessageResponse::new).toList()));
     }
 
 

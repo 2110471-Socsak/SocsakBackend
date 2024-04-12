@@ -9,6 +9,10 @@ import com.socsak.netwchat.repositories.GroupMsgRepository;
 import com.socsak.netwchat.repositories.GroupRepository;
 import com.socsak.netwchat.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,7 +53,8 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<GroupMsg> getMessages(String groupId) {
-        return null;
+    public List<GroupMsg> getMessages(String groupId, int page, int limit) {
+        Page<GroupMsg> groupMsgPage = groupMsgRepository.findAllByGroupId(groupId, PageRequest.of(page, limit, Sort.by("sentAt").descending()));
+        return groupMsgPage.getContent();
     }
 }
