@@ -14,6 +14,7 @@ public class GroupMsg {
     @Id
     private String id;
     @Setter
+    @DBRef
     private User sender;
     @Setter
     @DBRef
@@ -23,7 +24,7 @@ public class GroupMsg {
     @Setter
     private Date sentAt;
 
-    public GroupMsg(User sender, Group group, String message, Date sentAt) {
+    public GroupMsg(User sender, Group group, String message) {
         super();
         this.sender = sender;
         this.group = group;

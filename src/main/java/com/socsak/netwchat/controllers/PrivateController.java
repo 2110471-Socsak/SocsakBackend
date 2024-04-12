@@ -1,7 +1,7 @@
 package com.socsak.netwchat.controllers;
 
 import com.socsak.netwchat.dtos.generic.GenericResponse;
-import com.socsak.netwchat.dtos.messages.Message;
+import com.socsak.netwchat.dtos.messages.MessageResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,20 +14,20 @@ import java.util.List;
 public class PrivateController {
 
     @GetMapping("{userId}/messages")
-    public ResponseEntity<GenericResponse<List<Message>>> getPrivateMessagesHistory(
+    public ResponseEntity<GenericResponse<List<MessageResponse>>> getPrivateMessagesHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "16") int limit,
             @PathVariable String userId
     ) {
-        List<Message> pvRes =new ArrayList<>();
+        List<MessageResponse> pvRes =new ArrayList<>();
         for (int i=0; i<limit; i++) {
-            Message message = Message.builder()
+            MessageResponse messageResponse = MessageResponse.builder()
                     .id("Mongo ObjectID")
-                    .senderId("Mongo ObjectID")
+                    .sender("username")
                     .message("text hello world welcome")
                     .sentAt(new Date(System.currentTimeMillis() - i * 2123L))
                     .build();
-            pvRes.add(message);
+            pvRes.add(messageResponse);
         }
         return ResponseEntity.ok(GenericResponse.success(pvRes));
     }

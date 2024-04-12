@@ -9,9 +9,9 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-public class Message {
+public class MessageResponse {
     private String id;
-    private String senderId;
+    private String sender;
     private Date sentAt;
     private String message;
 }
