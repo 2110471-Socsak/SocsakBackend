@@ -40,13 +40,10 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupMsg sendMessage(String sender, String groupId, String message) throws Exception {
-        Optional<Group> groupOptional = groupRepository.findById(groupId);
-        Group group = groupOptional.orElseThrow(GroupNotFoundException::new);
+        Group group = groupRepository.findById(groupId).orElseThrow(GroupNotFoundException::new);
 
-        User user = userRepository.findByUsername(sender);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        User user = userRepository.findByUsername(sender).orElseThrow(UserNotFoundException::new);
+
         return groupMsgRepository.insert(new GroupMsg(
             user, group, message
         ));

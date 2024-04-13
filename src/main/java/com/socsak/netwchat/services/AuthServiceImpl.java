@@ -7,6 +7,7 @@ import com.socsak.netwchat.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,7 +46,9 @@ public class AuthServiceImpl implements AuthService {
                         authRequest.getPassword()
                 )
         );
-        User user = userRepository.findByUsername(authRequest.getUsername());
+        User user = userRepository.findByUsername(authRequest.getUsername()).orElseThrow(
+                () -> new BadCredentialsException("User not found")
+        );
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
