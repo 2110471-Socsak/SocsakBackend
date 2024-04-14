@@ -3,7 +3,7 @@ package com.socsak.netwchat.controllers;
 import com.socsak.netwchat.dtos.generic.GenericResponse;
 import com.socsak.netwchat.dtos.group.CreateGroupRequest;
 import com.socsak.netwchat.dtos.messages.MessageResponse;
-import com.socsak.netwchat.dtos.messages.SendGroupMessageRequest;
+import com.socsak.netwchat.dtos.messages.SendMessageRequest;
 import com.socsak.netwchat.exceptions.group.GroupNotFoundException;
 import com.socsak.netwchat.exceptions.user.UserNotFoundException;
 import com.socsak.netwchat.models.Group;
@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -60,7 +58,7 @@ public class GroupController {
     // DEV
     @PostMapping("{groupId}/send")
     public ResponseEntity<GenericResponse<MessageResponse>> sendMessage(
-            @RequestBody SendGroupMessageRequest request,
+            @RequestBody SendMessageRequest request,
             @PathVariable String groupId
     ) {
         try {
