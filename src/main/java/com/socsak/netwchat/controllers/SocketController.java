@@ -50,13 +50,6 @@ public class SocketController {
             }
             client.set("user", userDetails);
             System.out.println("User " + ((UserDetails) client.get("user")).getUsername() + " connected");
-
-            //  TODO : 2. Validate does user have access to room, then join
-
-            //  3. If both success, join room.
-            String room = client.getHandshakeData().getSingleUrlParam("room");
-            client.joinRoom(room);
-
         };
     }
 
