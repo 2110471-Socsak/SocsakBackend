@@ -44,6 +44,7 @@ public class SocketController {
             //  1. Token check and extract username
             UserDetails userDetails = authorize(client);
             if (userDetails == null) {
+                System.out.println("JWT Token is invalid");
                 client.disconnect();
                 return;
             }
@@ -83,7 +84,7 @@ public class SocketController {
 
     private DisconnectListener onDisconnected() {
         return (client) -> {
-            System.out.println("Client[ " + client.getSessionId().toString() + " ] - Disconnected from socket");
+            System.out.println("Client [ " + client.getSessionId().toString() + " ] - Disconnected from socket");
         };
     }
 
