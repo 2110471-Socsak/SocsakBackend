@@ -11,5 +11,5 @@ import java.util.List;
 @Builder
 public class UsersResponse {
 
-    List<User> users;
+    List<UserExposed> users;
 }

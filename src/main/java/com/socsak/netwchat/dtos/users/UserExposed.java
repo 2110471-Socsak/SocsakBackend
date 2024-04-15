@@ -7,8 +7,7 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class User {
-    private String id;
+public class UserExposed {
     private String username;
     private boolean online;
 }
