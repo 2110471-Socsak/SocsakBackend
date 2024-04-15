@@ -1,5 +1,6 @@
 package com.socsak.netwchat.controllers;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import com.socsak.netwchat.dtos.generic.GenericResponse;
 import com.socsak.netwchat.dtos.group.CreateGroupRequest;
 import com.socsak.netwchat.dtos.messages.MessageResponse;
@@ -24,10 +25,14 @@ public class GroupController {
     @Autowired
     GroupService groupService;
 
+    @Autowired
+    SocketIOServer ioServer;
+
     @PostMapping()
     public ResponseEntity<GenericResponse<Group>> createGroup(@RequestBody CreateGroupRequest createGroupRequest) {
        try {
            Group group = groupService.createGroup(createGroupRequest.getName());
+           ioServer.getBroadcastOperations().sendEvent("group_created", group);
            return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(group));
        } catch (Exception e) {
            return ResponseEntity.internalServerError().build();
