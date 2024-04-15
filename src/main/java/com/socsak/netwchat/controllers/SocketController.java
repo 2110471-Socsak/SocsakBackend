@@ -5,6 +5,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.socsak.netwchat.dtos.messages.JoinRoomRequest;
 import com.socsak.netwchat.dtos.messages.MessageResponse;
 import com.socsak.netwchat.dtos.messages.SendMessageRequest;
 import com.socsak.netwchat.services.GroupService;
@@ -21,6 +22,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SocketController {
+
+    @Autowired
+    SocketIOServer ioServer;
     @Autowired
     JwtUtil jwtUtil;
     @Autowired
@@ -34,7 +38,8 @@ public class SocketController {
     public SocketController(SocketIOServer server) {
         server.addConnectListener(onConnected());
         server.addDisconnectListener(onDisconnected());
-        server.addEventListener("send_private", SendMessageRequest.class, onMessageReceived());
+        server.addEventListener("join_room", JoinRoomRequest.class, onJoinRequest());
+        server.addEventListener("send_message", SendMessageRequest.class, onMessageReceived());
     }
 
     private ConnectListener onConnected() {
@@ -78,6 +83,13 @@ public class SocketController {
     private DisconnectListener onDisconnected() {
         return (client) -> {
             System.out.println("Client [ " + client.getSessionId().toString() + " ] - Disconnected from socket");
+        };
+    }
+
+    private DataListener<JoinRoomRequest> onJoinRequest() {
+        return (senderClient, data, ackSender) -> {
+            // TODO : handle user join room (leave current room and join new room, also tell both room that user join/leave)
+            ioServer.getRoomOperations("").sendEvent("user_joined_room");
         };
     }
 
