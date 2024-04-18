@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import com.socsak.netwchat.exceptions.socket.CannotBroadcastDisconnected;
 
 
 @Component
@@ -60,6 +61,8 @@ public class SocketController {
             System.out.println("User " + ((UserDetails) client.get("user")).getUsername() + " connected");
 
             // TODO : Broadcast to every socket connections
+            server.getBroadcastOperations().sendEvent("user_connected", userDetails.getUsername());
+
         };
     }
 
@@ -90,6 +93,15 @@ public class SocketController {
             System.out.println("Client [ " + client.getSessionId().toString() + " ] - Disconnected from socket");
 
             // TODO : Broadcast to every socket connections
+            String username;
+            try {
+                UserDetails userDetails = client.get("user");
+                username = userDetails.getUsername();
+            } catch (Exception e) {
+                username = null;
+            }
+            server.getBroadcastOperations().sendEvent("user_disconnected", username);
+
         };
     }
 
