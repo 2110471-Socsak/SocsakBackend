@@ -95,7 +95,7 @@ public class SocketController {
 
     private DataListener<JoinRoomRequest> onJoinRequest() {
         return (senderClient, data, ackSender) -> {
-            // TODO : handle user join room (leave current room and join new room, also tell both room that user join/leave)
+            // TODO : handle user join room (leave current room and join new room, also tell everyone that user join/leave)
             server.getRoomOperations("").sendEvent("user_joined_room");
         };
     }
