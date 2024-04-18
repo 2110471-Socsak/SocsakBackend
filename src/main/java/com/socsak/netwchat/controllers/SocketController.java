@@ -5,9 +5,11 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.socsak.netwchat.dtos.group.CreateGroupRequest;
 import com.socsak.netwchat.dtos.messages.JoinRoomRequest;
 import com.socsak.netwchat.dtos.messages.MessageResponse;
 import com.socsak.netwchat.dtos.messages.SendMessageRequest;
+import com.socsak.netwchat.models.Group;
 import com.socsak.netwchat.services.GroupService;
 import com.socsak.netwchat.services.PrivateService;
 import com.socsak.netwchat.utils.JwtUtil;
@@ -24,21 +26,22 @@ import org.springframework.stereotype.Component;
 public class SocketController {
 
     @Autowired
-    SocketIOServer ioServer;
+    private JwtUtil jwtUtil;
     @Autowired
-    JwtUtil jwtUtil;
+    private UserDetailsService userDetailService;
     @Autowired
-    UserDetailsService userDetailService;
+    private PrivateService privateService;
     @Autowired
-    PrivateService privateService;
-    @Autowired
-    GroupService groupService;
+    private GroupService groupService;
+
+    private SocketIOServer server;
 
 
     public SocketController(SocketIOServer server) {
         server.addConnectListener(onConnected());
         server.addDisconnectListener(onDisconnected());
         server.addEventListener("join_room", JoinRoomRequest.class, onJoinRequest());
+        server.addEventListener("create_group", CreateGroupRequest.class, onCreateGroupRequest());
         server.addEventListener("send_message", SendMessageRequest.class, onMessageReceived());
     }
 
@@ -55,6 +58,8 @@ public class SocketController {
             }
             client.set("user", userDetails);
             System.out.println("User " + ((UserDetails) client.get("user")).getUsername() + " connected");
+
+            // TODO : Broadcast to every socket connections
         };
     }
 
@@ -83,13 +88,22 @@ public class SocketController {
     private DisconnectListener onDisconnected() {
         return (client) -> {
             System.out.println("Client [ " + client.getSessionId().toString() + " ] - Disconnected from socket");
+
+            // TODO : Broadcast to every socket connections
         };
     }
 
     private DataListener<JoinRoomRequest> onJoinRequest() {
         return (senderClient, data, ackSender) -> {
             // TODO : handle user join room (leave current room and join new room, also tell both room that user join/leave)
-            ioServer.getRoomOperations("").sendEvent("user_joined_room");
+            server.getRoomOperations("").sendEvent("user_joined_room");
+        };
+    }
+
+    private DataListener<CreateGroupRequest> onCreateGroupRequest() {
+        return (senderClient, data, ackSender) -> {
+            Group group = groupService.createGroup(data.getName());
+            server.getBroadcastOperations().sendEvent("group_created", group);
         };
     }
 

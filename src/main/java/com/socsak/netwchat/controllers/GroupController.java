@@ -25,20 +25,6 @@ public class GroupController {
     @Autowired
     GroupService groupService;
 
-    @Autowired
-    SocketIOServer ioServer;
-
-    @PostMapping()
-    public ResponseEntity<GenericResponse<Group>> createGroup(@RequestBody CreateGroupRequest createGroupRequest) {
-       try {
-           Group group = groupService.createGroup(createGroupRequest.getName());
-           ioServer.getBroadcastOperations().sendEvent("group_created", group);
-           return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(group));
-       } catch (Exception e) {
-           return ResponseEntity.internalServerError().build();
-       }
-    }
-
     @GetMapping()
     public ResponseEntity<GenericResponse<List<Group>>> getAllGroups() {
         try {
@@ -59,26 +45,4 @@ public class GroupController {
         return ResponseEntity.ok(GenericResponse.success(groupMsgList.stream().map(MessageResponse::new).toList()));
     }
 
-
-    // DEV
-    @PostMapping("{groupId}/send")
-    public ResponseEntity<GenericResponse<MessageResponse>> sendMessage(
-            @RequestBody SendMessageRequest request,
-            @PathVariable String groupId
-    ) {
-        try {
-            String sender = SecurityContextHolder.getContext().getAuthentication().getName();
-            GroupMsg groupMsg = groupService.sendMessage(sender, groupId, request.getMessage());
-            return ResponseEntity.ok(GenericResponse.success(MessageResponse.builder()
-                            .id(groupMsg.getId())
-                            .sender(groupMsg.getSender().getUsername())
-                            .message(groupMsg.getMessage())
-                            .sentAt(groupMsg.getSentAt())
-                    .build()));
-        } catch (GroupNotFoundException | UserNotFoundException e) {
-            return ResponseEntity.badRequest().body(GenericResponse.error(e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(GenericResponse.error(e.getMessage()));
-        }
-    }
 }
