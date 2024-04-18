@@ -30,7 +30,13 @@ public class UserController {
     public ResponseEntity<GenericResponse<UsersResponse>> getAllUsers() {
         Set<String> connectedUsers = new HashSet<>(
                 ioServer.getAllClients().stream().map(
-                        client -> ((UserDetails) client.get("user")).getUsername()
+                        client -> {
+                            try {
+                                return ((UserDetails) client.get("user")).getUsername();
+                            } catch (Exception e) {
+                                return null;
+                            }
+                        }
                 ).toList()
         );
 
