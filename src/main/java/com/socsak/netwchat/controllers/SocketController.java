@@ -33,7 +33,7 @@ public class SocketController {
     private PrivateService privateService;
     @Autowired
     private GroupService groupService;
-
+    @Autowired
     private SocketIOServer server;
 
 
@@ -103,6 +103,7 @@ public class SocketController {
     private DataListener<CreateGroupRequest> onCreateGroupRequest() {
         return (senderClient, data, ackSender) -> {
             Group group = groupService.createGroup(data.getName());
+            System.out.println("Group created [ " + group.getName() + " ']");
             server.getBroadcastOperations().sendEvent("group_created", group);
         };
     }
