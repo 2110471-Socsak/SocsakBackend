@@ -59,9 +59,7 @@ public class SocketController {
             client.set("user", userDetails);
             System.out.println("User " + ((UserDetails) client.get("user")).getUsername() + " connected");
 
-            // TODO : Broadcast to every socket connections
             server.getBroadcastOperations().sendEvent("user_connected", userDetails.getUsername());
-
         };
     }
 
@@ -91,7 +89,6 @@ public class SocketController {
         return (client) -> {
             System.out.println("Client [ " + client.getSessionId().toString() + " ] - Disconnected from socket");
 
-            // TODO : Broadcast to every socket connections
             String username;
             try {
                 UserDetails userDetails = client.get("user");
