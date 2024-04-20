@@ -23,10 +23,15 @@ public class PrivateServiceImpl implements PrivateService {
     UserRepository userRepository;
 
     @Override
-    public List<PrivateMsg> getMessages(String username1, String username2, int page, int limit) {
+    public List<PrivateMsg> getMessages(String username1, String username2, int page, int limit) throws Exception {
+
         Pageable pageable = PageRequest.of(page, limit);
-        Page<PrivateMsg> privateMsgPage = privateMsgRepository.findMessagesByUsers(username1, username2, pageable);
-        return privateMsgPage.getContent();  
+        User user1 = userRepository.findByUsername(username1).orElseThrow(UserNotFoundException::new);
+        User user2 = userRepository.findByUsername(username2).orElseThrow(UserNotFoundException::new);
+        Page<PrivateMsg> privateMsgPage = privateMsgRepository.findBySenderAndReceiverOrSenderAndReceiver(user1, user2,
+                user2, user1, pageable);
+        ;
+        return privateMsgPage.getContent();
     }
 
     @Override
@@ -35,7 +40,6 @@ public class PrivateServiceImpl implements PrivateService {
         User receiverUser = userRepository.findByUsername(receiver).orElseThrow(UserNotFoundException::new);
 
         return privateMsgRepository.insert(new PrivateMsg(
-            senderUser, receiverUser, message
-        ));
+                senderUser, receiverUser, message));
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -31,9 +30,14 @@ public class PrivateController {
             @RequestParam(defaultValue = "16") int limit,
             @PathVariable String username) {
         String reqUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<PrivateMsg> privateMsgList = privateService.getMessages(reqUsername, username, page, limit);
+        List<PrivateMsg> privateMsgList;
+        try {
+            privateMsgList = privateService.getMessages(reqUsername, username, page, limit);
+            return ResponseEntity.ok(GenericResponse.success(privateMsgList.stream().map(MessageResponse::new).toList()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
 
-        return ResponseEntity.ok(GenericResponse.success(privateMsgList.stream().map(MessageResponse::new).toList()));
     }
 
 }
