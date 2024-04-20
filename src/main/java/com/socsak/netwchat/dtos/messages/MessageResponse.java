@@ -1,6 +1,8 @@
 package com.socsak.netwchat.dtos.messages;
 
 import com.socsak.netwchat.models.GroupMsg;
+import com.socsak.netwchat.models.PrivateMsg;
+
 import lombok.*;
 
 import java.util.Date;
@@ -21,5 +23,12 @@ public class MessageResponse {
         setSender(groupMsg.getSender().getUsername());
         setSentAt(groupMsg.getSentAt());
         setMessage(groupMsg.getMessage());
+    }
+
+    public MessageResponse(PrivateMsg privateMsg) {
+        setId(privateMsg.getId());
+        setSender(privateMsg.getSender().getUsername());
+        setSentAt(privateMsg.getSentAt());
+        setMessage(privateMsg.getMessage());
     }
 }
