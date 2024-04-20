@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +35,32 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Group getGroupById(String groupId) {
+        if (groupId == null) {
+            throw new IllegalArgumentException("Group ID cannot be null");
+        }
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        if (optionalGroup.isPresent()) {
+            return optionalGroup.get();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public List<Group> getGroups() {
         return groupRepository.findAll();
     }
+    
+    @Override
+    public List<Group> getGroupsByIdList(List<String> groupIds) {
+        if (groupIds == null || groupIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return groupRepository.findAllById(groupIds);
+    }
+    
 
     @Override
     public GroupMsg sendMessage(String sender, String groupId, String message) throws Exception {

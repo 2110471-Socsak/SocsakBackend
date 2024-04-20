@@ -21,6 +21,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class SocketController {
@@ -103,10 +106,34 @@ public class SocketController {
 
     private DataListener<JoinRoomRequest> onJoinRequest() {
         return (senderClient, data, ackSender) -> {
-            // TODO : handle user join room (leave current room and join new room, also tell everyone that user join/leave)
-            server.getRoomOperations("").sendEvent("user_joined_room");
+
+            try {
+                UserDetails userDetails = senderClient.get("user");
+                String username = userDetails.getUsername();
+                ArrayList<String> currentRooms = new ArrayList<String>(senderClient.getAllRooms());
+                String joinRoom = data.getRoom();
+
+                if (!currentRooms.isEmpty()) {
+                    if (currentRooms.contains(joinRoom)) {
+                        return; // User is already in the requested room, no need to leave and rejoin
+                    }
+                    senderClient.leaveRooms(senderClient.getAllRooms());
+                    List<Group> currentGroupRooms = groupService.getGroupsByIdList(currentRooms);
+                    if (!currentGroupRooms.isEmpty()) {
+                        server.getBroadcastOperations().sendEvent("left_room", username, currentGroupRooms);
+                    }
+                }
+
+                senderClient.joinRoom(joinRoom);
+                Group joinGroupRoom = groupService.getGroupById(joinRoom);
+                if (data.isGroup()) {
+                    server.getBroadcastOperations().sendEvent("joined_room", username, joinGroupRoom);
+                }
+            } catch (Exception e) {
+                System.err.println("Error processing join request: " + e.getMessage());
+            }
         };
-    }
+    };
 
     private DataListener<CreateGroupRequest> onCreateGroupRequest() {
         return (senderClient, data, ackSender) -> {
