@@ -1,7 +1,10 @@
 package com.socsak.netwchat.services;
 
+import com.socsak.netwchat.exceptions.user.UserNotFoundException;
 import com.socsak.netwchat.models.PrivateMsg;
+import com.socsak.netwchat.models.User;
 import com.socsak.netwchat.repositories.PrivateMsgRepository;
+import com.socsak.netwchat.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,8 @@ public class PrivateServiceImpl implements PrivateService {
 
     @Autowired
     PrivateMsgRepository privateMsgRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public List<PrivateMsg> getMessages(String username1, String username2, int page, int limit) {
@@ -25,7 +30,12 @@ public class PrivateServiceImpl implements PrivateService {
     }
 
     @Override
-    public PrivateMsg sendMessage(String senderId, String receiverId, String message) {
-        return null;
+    public PrivateMsg sendMessage(String sender, String receiver, String message) throws Exception {
+        User senderUser = userRepository.findByUsername(sender).orElseThrow(UserNotFoundException::new);
+        User receiverUser = userRepository.findByUsername(receiver).orElseThrow(UserNotFoundException::new);
+
+        return privateMsgRepository.insert(new PrivateMsg(
+            senderUser, receiverUser, message
+        ));
     }
 }

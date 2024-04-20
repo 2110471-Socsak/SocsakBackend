@@ -10,6 +10,8 @@ import com.socsak.netwchat.dtos.messages.JoinRoomRequest;
 import com.socsak.netwchat.dtos.messages.MessageResponse;
 import com.socsak.netwchat.dtos.messages.SendMessageRequest;
 import com.socsak.netwchat.models.Group;
+import com.socsak.netwchat.models.GroupMsg;
+import com.socsak.netwchat.models.PrivateMsg;
 import com.socsak.netwchat.services.GroupService;
 import com.socsak.netwchat.services.PrivateService;
 import com.socsak.netwchat.utils.JwtUtil;
@@ -120,14 +122,16 @@ public class SocketController {
                     senderClient.leaveRooms(senderClient.getAllRooms());
                     List<Group> currentGroupRooms = groupService.getGroupsByIdList(currentRooms);
                     if (!currentGroupRooms.isEmpty()) {
-                        server.getBroadcastOperations().sendEvent("left_room", username, currentGroupRooms);
+                        server.getBroadcastOperations().sendEvent("left_room", currentGroupRooms);
                     }
                 }
 
-                senderClient.joinRoom(joinRoom);
-                Group joinGroupRoom = groupService.getGroupById(joinRoom);
                 if (data.isGroup()) {
-                    server.getBroadcastOperations().sendEvent("joined_room", username, joinGroupRoom);
+                    senderClient.joinRoom(joinRoom);
+                    Group joinGroupRoom = groupService.getGroupById(joinRoom);
+                    server.getBroadcastOperations().sendEvent("joined_room", joinGroupRoom);
+                } else {
+                    senderClient.joinRoom(username + "_" + joinRoom);
                 }
             } catch (Exception e) {
                 System.err.println("Error processing join request: " + e.getMessage());
@@ -145,10 +149,23 @@ public class SocketController {
 
     private DataListener<SendMessageRequest> onMessageReceived() {
         return (senderClient, data, ackSender) -> {
-            // TODO : handle user send message (receive -> do sth. (call services) -> callback to other user)
-            senderClient.sendEvent("new_message", new MessageResponse());
+            try {
+                UserDetails userDetails = senderClient.get("user");
+                String username = userDetails.getUsername();
+
+                if (data.isGroup()) {
+                    GroupMsg sentMessage = groupService.sendMessage(username, data.getRoom(), data.getMessage());
+                    server.getRoomOperations(data.getRoom()).sendEvent("new_message", new MessageResponse(sentMessage));
+                } else {
+                    PrivateMsg sentMessage = privateService.sendMessage(username, data.getRoom(), data.getMessage());
+                    server.getRoomOperations(username + "_" + data.getRoom()).sendEvent("new_message", new MessageResponse(sentMessage));
+                    server.getRoomOperations(data.getRoom() + "_" + username).sendEvent("new_message", new MessageResponse(sentMessage));
+                }
+
+            } catch (Exception e) {
+                System.err.println("Error processing send message request: " + e.getMessage());
+            }
         };
     }
-
 
 }
