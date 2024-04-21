@@ -6,6 +6,7 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.socsak.netwchat.dtos.group.CreateGroupRequest;
+import com.socsak.netwchat.dtos.group.RoomCountUpdateEventData;
 import com.socsak.netwchat.dtos.messages.JoinRoomRequest;
 import com.socsak.netwchat.dtos.messages.MessageResponse;
 import com.socsak.netwchat.dtos.messages.SendMessageRequest;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SocketController {
@@ -97,6 +99,7 @@ public class SocketController {
             } catch (Exception e) {
                 username = null;
             }
+
             server.getBroadcastOperations().sendEvent("user_disconnected", username);
 
         };
@@ -116,16 +119,20 @@ public class SocketController {
                         return; // User is already in the requested room, no need to leave and rejoin
                     }
                     senderClient.leaveRooms(senderClient.getAllRooms());
-                    List<Group> currentGroupRooms = groupService.getGroupsByIdList(currentRooms);
-                    if (!currentGroupRooms.isEmpty()) {
-                        server.getBroadcastOperations().sendEvent("left_room", currentGroupRooms);
+                    for (String group : currentRooms) {
+                        int count = server.getRoomOperations(group).getClients().size();
+                        RoomCountUpdateEventData eventData = new RoomCountUpdateEventData(group, count);
+                        System.out.println(eventData);
+                        server.getBroadcastOperations().sendEvent("room_count_updated", eventData);
                     }
                 }
 
                 if (data.isGroup()) {
                     senderClient.joinRoom(joinRoom);
-                    Group joinGroupRoom = groupService.getGroupById(joinRoom);
-                    server.getBroadcastOperations().sendEvent("joined_room", joinGroupRoom);
+                    int count = server.getRoomOperations(joinRoom).getClients().size();
+                    RoomCountUpdateEventData eventData = new RoomCountUpdateEventData(joinRoom, count);
+                    System.out.println(eventData);
+                    server.getBroadcastOperations().sendEvent("room_count_updated", eventData);
                 } else {
                     senderClient.joinRoom(username + "_" + joinRoom);
                 }
