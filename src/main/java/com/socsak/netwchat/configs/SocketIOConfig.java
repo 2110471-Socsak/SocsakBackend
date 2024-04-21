@@ -18,6 +18,7 @@ public class SocketIOConfig {
         com.corundumstudio.socketio.Configuration configuration = new com.corundumstudio.socketio.Configuration();
         configuration.setHostname(host);
         configuration.setPort(Integer.parseInt(port));
+        configuration.setAllowHeaders("Authorization");
         return new SocketIOServer(configuration);
     }
 }
