@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class PrivateServiceImpl implements PrivateService {
     @Override
     public List<PrivateMsg> getMessages(String username1, String username2, int page, int limit) throws Exception {
 
-        Pageable pageable = PageRequest.of(page, limit);
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("sentAt").descending());
         User user1 = userRepository.findByUsername(username1).orElseThrow(UserNotFoundException::new);
         User user2 = userRepository.findByUsername(username2).orElseThrow(UserNotFoundException::new);
         Page<PrivateMsg> privateMsgPage = privateMsgRepository.findBySenderAndReceiverOrSenderAndReceiver(user1, user2,
