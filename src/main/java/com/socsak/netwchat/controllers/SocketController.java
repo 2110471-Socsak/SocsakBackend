@@ -147,6 +147,7 @@ public class SocketController {
             Group group = groupService.createGroup(data.getName());
             System.out.println("Group created [ " + group.getName() + " ']");
             server.getBroadcastOperations().sendEvent("group_created", group);
+            ackSender.sendAckData(group);
         };
     }
 
