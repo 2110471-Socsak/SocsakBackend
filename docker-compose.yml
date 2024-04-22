@@ -6,7 +6,7 @@ services:
     restart: on-failure
     ports:
       - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
-      - $SPRINT_LOCAL_SOCKET_PORT:$SPRING_DOCKER_SOCKET_PORT
+      - $SPRING_LOCAL_SOCKET_PORT:$SPRING_DOCKER_SOCKET_PORT
     environment:
       SPRING_APPLICATION_JSON: '{
           "spring.data.mongodb.uri" : "mongodb://$MONGODB_USER:$MONGODB_PASSWORD@mongo_db:$MONGODB_DOCKER_PORT/$MONGODB_DATABASE?authSource=admin"
